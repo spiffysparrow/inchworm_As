@@ -8,8 +8,19 @@ lib.myAnimation = function(canvas){
 
   var a2 = new lib.LetterA([200, 200], 9);
   a2.render(c);
-  a2.move(50, 50)
-  a2.render(c)
+
+
+  var moved = 0
+
+  var animate = function() {
+    console.log("lala");
+    a2.move(moved, moved)
+    moved++;
+    a2.render(c)
+    requestAnimationFrame(animate)
+  }
+
+  animate();
 
 }
 
