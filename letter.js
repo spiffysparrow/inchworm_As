@@ -1,28 +1,60 @@
 var lib = {}
 
+lib.totalAs = 0
+
 lib.mousealert = function(e) {
-  console.log("click" + e.pageX);
-  var c = lib.canvas
-  c.clearRect(0, 0, canvas.width, canvas.height);
-  var a1 = new lib.LetterA([e.pageX, e.pageY], 4);
-  lib.animate(a1)
+  for(var i = 0; i < lib.totalAs; i++){
+    var pos = lib.getRandomPointOnCircle()
+    var a1 = new lib.LetterA(pos, 1);
+    console.log("click" + a1.pos);
+    a1.render()
+  }
+  lib.totalAs++;
+  // console.log("click" + a1.pos);
+  // lib.fall(a1)
+  // var c = lib.canvas
+  // c.clearRect(0, 0, canvas.width, canvas.height);
+  // var a1 = new lib.LetterA([e.pageX, e.pageY], 4);
+  // lib.fall(a1)
 }
 document.onmousedown = lib.mousealert;
 
-lib.animate = function(subject, moved) {
+lib.fall = function(subject, moved) {
   var moved = moved || 0
-  console.log(moved + " moved");
+  // console.log(moved + " moved");
   var c = lib.canvas;
   c.clearRect(0, 0, canvas.width, canvas.height);
   subject.move(moved, moved)
   moved++;
-  console.log(moved + " after moved");
+  // console.log(moved + " after moved");
   subject.render(c)
   lib.drawPageConstants()
-  console.log("pos "+subject.pos[0])
+  // console.log("pos "+subject.pos[0])
   if(subject.pos[0] < 800){
     requestAnimationFrame(function(){
-      lib.animate(subject, moved)
+      lib.fall(subject, moved)
+    })
+  }
+}
+
+lib.fall_to = function(subject, moved, destination) {
+  // var moved = moved || 0
+  var move = [0, 0]
+  if (destination[0] > subject.pos[0]){
+    
+  }
+  // console.log(moved + " moved");
+  var c = lib.canvas;
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  subject.move(moved, moved)
+  moved++;
+  // console.log(moved + " after moved");
+  subject.render(c)
+  lib.drawPageConstants()
+  // console.log("pos "+subject.pos[0])
+  if(subject.pos[0] < 800){
+    requestAnimationFrame(function(){
+      lib.fall_to(subject, moved, destination)
     })
   }
 }
@@ -32,6 +64,15 @@ lib.drawPageConstants = function() {
   var a1 = new lib.LetterA([100, 100], 4);
   a1.render(c);
 };
+
+lib.getRandomPointOnCircle = function() {
+  var center = [300, 300]
+  var radius = 200;
+  var angle = Math.random()*Math.PI*2;
+  var x = Math.cos(angle)*radius;
+  var y = Math.sin(angle)*radius;
+  return [x + center[0], y + center[1]]
+}
 
 
 lib.myAnimation = function(canvas){
@@ -47,7 +88,7 @@ lib.myAnimation = function(canvas){
   a2.render(c);
 
 
-  lib.animate(a2);
+  lib.fall(a2);
 
 }
 
@@ -59,6 +100,7 @@ lib.LetterA = function(pos, size){
 }
 
 lib.LetterA.prototype.render = function (c) {
+  var c = lib.canvas
   c.fillStyle = "red";
   var x = this.pos[0]
   var y = this.pos[1]
