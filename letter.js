@@ -9,6 +9,13 @@ lib.mousealert = function(e) {
   pos = pos.slice(0, 2)
   var a1 = new lib.LetterA([e.pageX, e.pageY], 1);
   a1.angle = angle;
+  var c = lib.canvas
+  c.beginPath();
+  c.moveTo(e.pageX, e.pageY)
+  c.lineTo(pos[0], pos[1]);
+  c.lineWidth = 4;
+  c.strokeStyle = 'red';
+  c.stroke();
   lib.fall_to(a1, pos)
   lib.totalAs++;
 
@@ -30,21 +37,43 @@ lib.fall = function(subject, moved) {
   }
 }
 
-lib.createRing = function(subject){
+lib.createRing = function(subject) {
+
+  function addA(angle, i){
+    var newPos = lib.findCirclePosOffset(subject.angle, .05*i*i)
+    var a1 = new lib.LetterA(newPos, 1);
+    a1.render()
+    lib.pageConstants.push(a1)
+
+    var newPos = lib.findCirclePosOffset(subject.angle, .05*i*i*-1)
+    var a2 = new lib.LetterA(newPos, 1);
+    a2.render()
+    lib.pageConstants.push(a2)
+    console.log(i)
+
+    i++;
+    if(i < 8){
+      setTimeout(function(){
+        addA(angle, i);
+      }, 50)
+    }
+  }
+
+  addA(subject.angle, 0);
+}
+
+
+
+lib.findCirclePosOffset = function(startAngle, offset) {
   var center = [300, 300]
   var radius = 200;
-  console.log("subject", subject.pos)
-  var angle = subject.angle + .1
-  console.log("angles" + "sub angle " + subject.angle + " new " + angle);
+  var angle = startAngle + offset
   var x = Math.cos(angle)*radius;
   var y = Math.sin(angle)*radius;
   x = Math.round(x)
   y = Math.round(y)
   var newPos = [x + center[0], y + center[1]]
-  var a1 = new lib.LetterA(newPos, 1);
-  a1.render()
-  lib.pageConstants.push(a1)
-  console.log("new", newPos)
+  return newPos
 }
 
 lib.fall_to = function(subject, destination) {
@@ -77,7 +106,7 @@ lib.fall_to = function(subject, destination) {
   var currentMove = subject.currentMove;
 
   var closeEnough = Math.abs(destination[0] - subject.pos[0]) + Math.abs(destination[1] - subject.pos[1])
-  if(closeEnough < 3){
+  if(closeEnough < 7){
     currentMove = [0, 0]
     subject.pos = destination
     lib.pageConstants.push(subject)
@@ -86,16 +115,14 @@ lib.fall_to = function(subject, destination) {
   }
 
   var c = lib.canvas;
-  c.clearRect(0, 0, canvas.width, canvas.height);
+  // c.clearRect(0, 0, canvas.width, canvas.height);
   subject.move(currentMove[0], currentMove[1])
   subject.streek--;
   subject.render(c)
   lib.drawPageConstants()
-  if(currentMove != [0,0]){
-    requestAnimationFrame(function(){
-      lib.fall_to(subject, destination)
-    })
-  }
+  requestAnimationFrame(function(){
+    lib.fall_to(subject, destination)
+  })
 }
 
 lib.pageConstants = []
