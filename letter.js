@@ -1,13 +1,37 @@
 var lib = {}
 
-lib.mousealert = function() {
-  console.log("click");
+lib.mousealert = function(e) {
+  console.log("click" + e.pageX);
   var c = lib.canvas
   c.clearRect(0, 0, canvas.width, canvas.height);
-  var a1 = new lib.LetterA([100, 100], 4);
-  a1.render(c);
+  var a1 = new lib.LetterA([e.pageX, e.pageY], 4);
+  lib.animate(a1)
 }
 document.onmousedown = lib.mousealert;
+
+lib.animate = function(subject, moved) {
+  var moved = moved || 0
+  console.log(moved + " moved");
+  var c = lib.canvas;
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  subject.move(moved, moved)
+  moved++;
+  console.log(moved + " after moved");
+  subject.render(c)
+  lib.drawPageConstants()
+  console.log("pos "+subject.pos[0])
+  if(subject.pos[0] < 800){
+    requestAnimationFrame(function(){
+      lib.animate(subject, moved)
+    })
+  }
+}
+
+lib.drawPageConstants = function() {
+  var c = lib.canvas
+  var a1 = new lib.LetterA([100, 100], 4);
+  a1.render(c);
+};
 
 
 lib.myAnimation = function(canvas){
@@ -23,20 +47,10 @@ lib.myAnimation = function(canvas){
   a2.render(c);
 
 
-  var moved = 0
-
-  var animate = function() {
-    // console.log(moved + " moved");
-    c.clearRect(0, 0, canvas.width, canvas.height);
-    a2.move(moved, moved)
-    moved++;
-    a2.render(c)
-    requestAnimationFrame(animate)
-  }
-
-  animate();
+  lib.animate(a2);
 
 }
+
 
 
 lib.LetterA = function(pos, size){
