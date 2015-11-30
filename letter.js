@@ -1,8 +1,21 @@
 var lib = {}
 
+lib.mousealert = function() {
+  console.log("click");
+  var c = lib.canvas
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  var a1 = new lib.LetterA([100, 100], 4);
+  a1.render(c);
+}
+document.onmousedown = lib.mousealert;
+
+
 lib.myAnimation = function(canvas){
 
   var c = canvas.getContext('2d');
+
+  lib.canvas = c
+
   var a1 = new lib.LetterA([100, 100], 4);
   a1.render(c);
 
@@ -13,7 +26,8 @@ lib.myAnimation = function(canvas){
   var moved = 0
 
   var animate = function() {
-    console.log("lala");
+    // console.log(moved + " moved");
+    c.clearRect(0, 0, canvas.width, canvas.height);
     a2.move(moved, moved)
     moved++;
     a2.render(c)
@@ -31,7 +45,6 @@ lib.LetterA = function(pos, size){
 }
 
 lib.LetterA.prototype.render = function (c) {
-  console.log(c)
   c.fillStyle = "red";
   var x = this.pos[0]
   var y = this.pos[1]
