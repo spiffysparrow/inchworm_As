@@ -3,33 +3,24 @@ var lib = {}
 lib.totalAs = 0
 
 lib.mousealert = function(e) {
-  for(var i = 0; i < lib.totalAs; i++){
-    var pos = lib.getRandomPointOnCircle()
-    var a1 = new lib.LetterA(pos, 1);
-    console.log("click" + a1.pos);
-    a1.render()
-  }
+  console.log("--Total As " + lib.totalAs);
+  var pos = lib.getRandomPointOnCircle()
+  var a1 = new lib.LetterA([e.pageX, e.pageY], 1);
+  console.log("click " + pos);
+  lib.fall_to(a1, pos)
   lib.totalAs++;
-  // console.log("click" + a1.pos);
-  // lib.fall(a1)
-  // var c = lib.canvas
-  // c.clearRect(0, 0, canvas.width, canvas.height);
-  // var a1 = new lib.LetterA([e.pageX, e.pageY], 4);
-  // lib.fall(a1)
+
 }
 document.onmousedown = lib.mousealert;
 
 lib.fall = function(subject, moved) {
   var moved = moved || 0
-  // console.log(moved + " moved");
   var c = lib.canvas;
   c.clearRect(0, 0, canvas.width, canvas.height);
   subject.move(moved, moved)
   moved++;
-  // console.log(moved + " after moved");
   subject.render(c)
   lib.drawPageConstants()
-  // console.log("pos "+subject.pos[0])
   if(subject.pos[0] < 800){
     requestAnimationFrame(function(){
       lib.fall(subject, moved)
@@ -37,32 +28,52 @@ lib.fall = function(subject, moved) {
   }
 }
 
-lib.fall_to = function(subject, moved, destination) {
-  // var moved = moved || 0
+lib.fall_to = function(subject, destination) {
   var move = [0, 0]
   if (destination[0] > subject.pos[0]){
-    
+    move[0] = 1
+  }else{
+    move[0] = -1
   }
-  // console.log(moved + " moved");
+
+  if (destination[1] > subject.pos[1]){
+    move[1] = 1
+  }else{
+    move[1] = -1
+  }
+
+  // console.log("dest" + destination + " sub " + subject.pos);
+  var closeEnough = Math.abs(destination[0] - subject.pos[0]) + Math.abs(destination[1] - subject.pos[1])
+  if(closeEnough < 3){
+    // console.log("here!!!")
+    move = [0, 0]
+    subject.pos = destination
+    lib.pageConstants.push(subject)
+    return
+  }
+
+
+  // console.log(move);
   var c = lib.canvas;
   c.clearRect(0, 0, canvas.width, canvas.height);
-  subject.move(moved, moved)
-  moved++;
-  // console.log(moved + " after moved");
+  subject.move(move[0], move[1])
+  move++;
   subject.render(c)
   lib.drawPageConstants()
-  // console.log("pos "+subject.pos[0])
-  if(subject.pos[0] < 800){
+  if(move != [0,0]){
     requestAnimationFrame(function(){
-      lib.fall_to(subject, moved, destination)
+      lib.fall_to(subject, destination)
     })
   }
 }
 
+lib.pageConstants = []
+
 lib.drawPageConstants = function() {
-  var c = lib.canvas
-  var a1 = new lib.LetterA([100, 100], 4);
-  a1.render(c);
+  lib.pageConstants.forEach(function(item){
+    var c = lib.canvas
+    item.render(c)
+  });
 };
 
 lib.getRandomPointOnCircle = function() {
@@ -71,6 +82,8 @@ lib.getRandomPointOnCircle = function() {
   var angle = Math.random()*Math.PI*2;
   var x = Math.cos(angle)*radius;
   var y = Math.sin(angle)*radius;
+  x = Math.round(x)
+  y = Math.round(y)
   return [x + center[0], y + center[1]]
 }
 
