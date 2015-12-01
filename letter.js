@@ -18,6 +18,7 @@ lib.mousealert = function(e) {
   c.stroke();
   lib.fall_to(a1, pos)
   lib.totalAs++;
+  lib.drawBigRing(c)
 
 }
 document.onmousedown = lib.mousealert;
@@ -62,18 +63,31 @@ lib.createRing = function(subject) {
   addA(subject.angle, 0);
 }
 
+lib.drawBigRing = function(){
+  console.log('asdf')
+  var center = [300, 300];
+  var c = lib.canvas;
+  c.beginPath();
+  c.arc(300,300,200,0,2*Math.PI);
+  c.lineWidth = 14;
+  var shadeOfRed = Math.floor(Math.random()*120)
+  lib.oldRed = shadeOfRed;
 
+
+  c.strokeStyle = "rgba(158, "+ shadeOfRed +", 22, 1)";
+  c.stroke();
+}
 
 lib.findCirclePosOffset = function(startAngle, offset) {
-  var center = [300, 300]
+  var center = [300, 300];
   var radius = 200;
-  var angle = startAngle + offset
+  var angle = startAngle + offset;
   var x = Math.cos(angle)*radius;
   var y = Math.sin(angle)*radius;
-  x = Math.round(x)
-  y = Math.round(y)
-  var newPos = [x + center[0], y + center[1]]
-  return newPos
+  x = Math.round(x);
+  y = Math.round(y);
+  var newPos = [x + center[0], y + center[1]];
+  return newPos;
 }
 
 lib.fall_to = function(subject, destination) {
@@ -110,7 +124,8 @@ lib.fall_to = function(subject, destination) {
     currentMove = [0, 0]
     subject.pos = destination
     lib.pageConstants.push(subject)
-    lib.createRing(subject)
+    // lib.createRing(subject)
+    lib.drawBigRing();
     return
   }
 
